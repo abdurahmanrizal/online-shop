@@ -7,7 +7,8 @@ const path = require('path');
 app.set("view engine", "ejs");
 app.set("views", "views");
 
-const productRoute = require('./routes/product');
+const adminRoute = require('./routes/admin');
+const shopRoute = require('./routes/shop');
 
 const rootDir = require("./helpers/path");
 
@@ -19,7 +20,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(express.static(path.join(rootDir, 'public')));
 
-app.use('/product', productRoute.routes);
+app.use(shopRoute.routes);
+
+app.use('/admin', adminRoute.routes);
 
 app.use(handlerController.getHandler);
   

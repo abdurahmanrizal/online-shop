@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Open+Sans:400,700');
+@import url("https://fonts.googleapis.com/css?family=Open+Sans:400,700");
 
 * {
   box-sizing: border-box;
@@ -7,7 +7,7 @@
 body {
   padding: 0;
   margin: 0;
-  font-family: 'Open Sans', sans-serif;
+  font-family: "Open Sans", sans-serif;
 }
 
 main {
@@ -145,8 +145,19 @@ form {
   align-items: stretch;
 }
 
+.grid__list {
+  width: 100%;
+}
+
+.grid__list li {
+  padding: 0.5rem 1rem;
+}
 .card {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
+}
+
+ul.card {
+  width: 100%;
 }
 
 .card__header,

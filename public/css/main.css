@@ -208,6 +208,13 @@ ul.card {
   color: white;
 }
 
+.image {
+  height: 13rem;
+}
+.image img {
+  width: 300px;
+}
+
 @media (min-width: 768px) {
   .main-header__nav {
     display: flex;

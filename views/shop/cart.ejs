@@ -11,19 +11,24 @@
                         <% products.forEach(p => {  %>
                             <li style="list-style: none;">
                                 <div>
-                                    <img src="<%= p.productData.imageUrl%>" alt="<%=p.productData.title%>" class="card" style="width: 100px; padding: 1.5rem 0rem">
-                                    <p style="font-weight: bold;"><%= p.productData.title %> (<%= p.qty%> qty) </p>
+                                    <img src="<%= p.imageUrl%>" alt="<%=p.title%>" class="card" style="width: 100px; padding: 1.5rem 0rem">
+                                    <p style="font-weight: bold;"><%= p.title %> (<%= p.cartItem.quantity%> qty) </p>
                                     <div>
                                         <form action="/cart/delete" method="POST">
-                                            <input type="hidden" name="productId" value="<%= p.productData.id %>">
+                                            <input type="hidden" name="productId" value="<%= p.id %>">
                                             <button class="btn" type="submit">Delete</button>
                                         </form>
                                     </div>
-                                </div>
-                                
+                                </div> 
                             </li>
                         <% }) %>
                     </ul>
+                    <br>
+                    <div class="centered">
+                        <form action="/create-order" method="POST">
+                            <button type="submit" class="btn">Order Now</button>
+                        </form>
+                    </div>
                     
                 </div>
                 <% } else { %>

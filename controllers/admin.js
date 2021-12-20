@@ -13,13 +13,24 @@ exports.getEditProduct = (req, res, next) => {
   if (!editingMode) {
     return res.redirect("/");
   }
-  Product.findByPk(req.params.productId)
-    .then((rows) => {
+
+  req.user
+    .getProducts({
+      where: {
+        id: req.params.productId,
+      },
+    })
+    // Product.findByPk(req.params.productId)
+    .then((products) => {
+      const product = products[0];
+      if (!product) {
+        res.redirect("/");
+      }
       res.render("admin/edit-product", {
         pageTitle: "Edit Product",
         path: "/admin/edit-product",
         editing: editingMode,
-        product: rows,
+        product: product,
       });
     })
     .catch((err) => console.log(err));
@@ -30,16 +41,31 @@ exports.postAddProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
-  Product.create({
-    title: title,
-    price: price,
-    description: description,
-    imageUrl: imageUrl,
-  })
+  // cool way
+  req.user
+    .createProduct({
+      title: title,
+      price: price,
+      description: description,
+      imageUrl: imageUrl,
+      userId: req.user.id,
+    })
     .then((result) => {
       res.redirect("/");
     })
     .catch((err) => console.log(err));
+  // alternative way
+  // Product.create({
+  //   title: title,
+  //   price: price,
+  //   description: description,
+  //   imageUrl: imageUrl,
+  //   userId: req.user.id,
+  // })
+  //   .then((result) => {
+  //     res.redirect("/");
+  //   })
+  //   .catch((err) => console.log(err));
 };
 
 exports.postEditProduct = (req, res, next) => {
@@ -49,37 +75,78 @@ exports.postEditProduct = (req, res, next) => {
   const price = req.body.price;
   const description = req.body.description;
 
-  Product.update(
-    {
-      title: title,
-      price: price,
-      description: description,
-      imageUrl: imageUrl,
-    },
-    {
+  // first way with association
+  req.user
+    .getProducts({
       where: {
         id: productId,
       },
-    }
-  )
-    .then(() => {
+    })
+    // Product.findByPk(productId) // not with association
+    .then((products) => {
+      const product = products[0];
+      if (!product) {
+        res.redirect("/");
+      }
+      product.title = title;
+      product.price = price;
+      product.description = description;
+      product.imageUrl = imageUrl;
+      return product.save();
+    })
+    .then((result) => {
+      console.log("updated");
       res.redirect("/admin/products");
     })
     .catch((err) => console.log(err));
+  // second way
+  // Product.update(
+  //   {
+  //     title: title,
+  //     price: price,
+  //     description: description,
+  //     imageUrl: imageUrl,
+  //   },
+  //   {
+  //     where: {
+  //       id: productId,
+  //     },
+  //   }
+  // )
+  //   .then(() => {
+  //     res.redirect("/admin/products");
+  //   })
+  //   .catch((err) => console.log(err));
 };
 
 exports.postDeleteProduct = (req, res, next) => {
   const productId = req.body.productId;
-  Product.destroy({
-    where: {
-      id: productId,
-    },
-  })
-    .then(() => {
+  // first way with association
+  req.user
+    .getProducts({
+      where: {
+        id: productId,
+      },
+    })
+    // Product.findByPk(productId) // first way with not association
+    .then((products) => {
+      const product = products[0];
+      if (!product) {
+        res.redirect("/");
+      }
+      return product.destroy();
+    })
+    .then((result) => {
+      console.log("deleted");
       res.redirect("/admin/products");
     })
     .catch((err) => console.log(err));
-  // Product.delete(productId)
+  // second way
+  // Product.destroy({
+  //   where: {
+  //     id: productId,
+  //   },
+  // })
   //   .then(() => {
   //     res.redirect("/admin/products");
   //   })
@@ -87,12 +154,13 @@ exports.postDeleteProduct = (req, res, next) => {
 };
 
 exports.getProduct = (req, res, next) => {
-  Product.findAll()
-    .then((rows) => {
+  req.user
+    .getProducts()
+    .then((products) => {
       res.render("admin/products", {
         pageTitle: "Admin Products",
         path: "/admin/products",
-        prods: rows,
+        prods: products,
       });
     })
     .catch((err) => console.log(err));
